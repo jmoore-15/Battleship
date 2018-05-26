@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jmoo/Desktop/To Do/Battleship/board.h
+iostream
+-
+string
+-
+cstdlib
+-
+map
+-
+
+/Users/jmoo/Desktop/To Do/Battleship/main.cpp
+board.h
+/Users/jmoo/Desktop/To Do/Battleship/board.h
+
