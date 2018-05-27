@@ -22,17 +22,17 @@ int main() {
     destroyer.placeShip(gameBoard);
     patrol.placeShip(gameBoard);
 
-    /*for(int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            cout << "Is [" << i << ", " << j << "] taken? " << gameBoard.gameMatrix[i][j].taken << endl;
-        }
-    }*/
-
+    // TODO: Print out the board after all the ships have been randomly placed (not working)
+    cout << "  | 1 2 3 4 5 6 7 8 9 10 " << endl;
+    cout << "------------------------" << endl;
+    char letter1 = 'A';
     for(int i = 0; i < 10; i++) {
+        cout << letter1 << " | ";
         for (int j = 0; j < 10; j++) {
             cout << gameBoard.gameMatrix[i][j].taken << " ";
         }
         cout << endl;
+        letter1++;
     }
 
     // Game Loop Start
