@@ -6,34 +6,23 @@ int main() {
     int computerShipsLeft = 5;
 
     // Create computers game board
-    board gameBoard;
+    board gameBoard = board();
 
     // Create computers ships
-    auto aircraft = board::ship("aircraft", 5);
-    auto battleship = board::ship("battleship", 4);
-    auto submarine = board::ship("submarine", 3);
-    auto destroyer = board::ship("destroyer", 3);
-    auto patrol = board::ship("patrol", 2);
+    board::ship* aircraft = new board::ship("a", 5);
+    board::ship* battleship = new board::ship("b", 4);
+    board::ship* submarine = new board::ship("s", 3);
+    board::ship* destroyer = new board::ship("d", 3);
+    board::ship* patrol = new board::ship("p", 2);
 
     // Place computers ships
-    aircraft.placeShip(gameBoard);
-    battleship.placeShip(gameBoard);
-    submarine.placeShip(gameBoard);
-    destroyer.placeShip(gameBoard);
-    patrol.placeShip(gameBoard);
+    aircraft->placeShip(gameBoard);
+    battleship->placeShip(gameBoard);
+    submarine->placeShip(gameBoard);
+    destroyer->placeShip(gameBoard);
+    patrol->placeShip(gameBoard);
 
-    // TODO: Print out the board after all the ships have been randomly placed (not working)
-    cout << "  | 1 2 3 4 5 6 7 8 9 10 " << endl;
-    cout << "------------------------" << endl;
-    char letter1 = 'A';
-    for(int i = 0; i < 10; i++) {
-        cout << letter1 << " | ";
-        for (int j = 0; j < 10; j++) {
-            cout << gameBoard.gameMatrix[i][j].taken << " ";
-        }
-        cout << endl;
-        letter1++;
-    }
+    gameBoard.printBoard();
 
     // Game Loop Start
     while(userShipsLeft != 0 && computerShipsLeft != 0) {
@@ -50,5 +39,11 @@ int main() {
     }
 
     // Game Loop Return
+    delete aircraft;
+    delete battleship;
+    delete submarine;
+    delete destroyer;
+    delete patrol;
+
     return 0;
 }
