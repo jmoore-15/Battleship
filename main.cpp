@@ -22,13 +22,24 @@ int main() {
     destroyer->placeShip(gameBoard);
     patrol->placeShip(gameBoard);
 
-    gameBoard.printBoard();
+    // gameBoard.printBoard();
+
+    string userGuess;
 
     // Game Loop Start
     while(userShipsLeft != 0 && computerShipsLeft != 0) {
-        // Player X inputs valid attack grid
-        // Check to see if attack is a hit
-        // Remove/add damage to hit ships
+
+        // User guesses a place
+        cout << "Guess (e.g. E4): ";
+        cin >> userGuess;
+
+        // Was it a hit or a miss?
+        if(gameBoard.markHitOrMiss(userGuess)) {
+
+        }
+
+        gameBoard.printBoard();
+
         // Redraw game board
         // Check to see if game is over
         // If game over - exit loop/end program

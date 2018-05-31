@@ -4,13 +4,28 @@
 #include <map>
 using namespace std;
 
+/* e.g. '4' turns into 'E' */
+string intCoordToString(int num) {
+    char letter = 'A';
+    for(int i = 0; i < num; i++)
+        letter++;
+
+    string inStringForm = "";
+    return inStringForm += letter;
+}
+
+/* e.g. 'E' turns into '4' */
+int intCoordToString(string userLetter) {
+    return 0;
+}
+
 class board {
 public:
     /******** Create the board. 10 x 10 ********/
     board() {
         for(int row = 0; row < 10; row++) {
             for(int col = 0; col < 10; col++) {
-                string coordinate = "[" + to_string(col + 1) + ", " + to_string(row + 1) + "]";
+                string coordinate = intCoordToString(row) + to_string(col);
                 boardSlot* slot = new boardSlot(col, row, coordinate);
                 gameMatrix[row][col] = slot;
             }
@@ -25,13 +40,40 @@ public:
         for(int i = 0; i < 10; i++) {
             cout << letter << " | ";
             for(int j = 0; j < 10; j++) {
-                if(gameMatrix[i][j]->taken)
+                if(gameMatrix[i][j]->hit || gameMatrix[i][j]->shipName == "X")
                     cout << gameMatrix[i][j]->shipName << " ";
                 else
-                    cout << "0 ";
+                    cout << "• ";
             }
             cout << endl;
             letter++;
+        }
+    }
+
+    /* Did the guess hit a ship? */
+    bool markHitOrMiss(string guess) {
+        char r = toupper(guess[0]);
+        char c = guess[1];
+        int row = r - 65;
+        int col = c - 49;
+
+        if(gameMatrix[row][col]->hit) {
+            cout << "You already guessed " << gameMatrix[row][col]->coordinate << endl;
+            return false;
+        }
+        else if(row < 0 || col < 0 || row > 9 || col > 9) {
+            cout << "That coordinate does not exist. Please guess a letter from A to J and a number from 1 to 10" << endl;
+            return false;
+        }
+        else if(gameMatrix[row][col]->taken) {
+            cout << "Hit!" << endl;
+            gameMatrix[row][col]->hit = true;
+            return true;
+        }
+        else {
+            cout << "Miss" << endl;
+            gameMatrix[row][col]->shipName = "X";
+            return false;
         }
     }
 
@@ -81,7 +123,7 @@ public:
         string name;                 // Carrier, Battleship, Cruiser, Submarine, Destroyer
         
         /* Pick computer ship location */
-        bool placeShip(board gameBoard) {
+        void placeShip(board gameBoard) {
             while (true)   // Until every spot in the ship has been placed on the board
             {
                 int row = rand() % 9;
@@ -89,55 +131,62 @@ public:
 
                 if (!gameBoard.gameMatrix[row][col]->taken) {        // If the board slot isn't taken
                     if (canBeHorizontal(row, col, gameBoard, size) || canBeVertical(row, col, gameBoard, size)) {
-                        cout << "Current coordinates are: [X = " << gameBoard.gameMatrix[row][col]->xAxis + 1;
-                        cout << ", Y = " << gameBoard.gameMatrix[row][col]->yAxis + 1 << "]" << endl;
-                        cout << "This is ship " << name << " of size " << size << endl;
+
+                        // cout << "Current coordinates are: " << gameBoard.gameMatrix[row][col]->coordinate << endl;
+                        // cout << "This is ship " << name << " of size " << size << endl;
                         
                         bool isItHorizontal = rand() % 2 == 1;             // Should the ship be horizontal (1) or vertical (0)
                         
-                        if (isItHorizontal && canBeHorizontal(row, col, gameBoard, size))
+                        if(isItHorizontal && canBeHorizontal(row, col, gameBoard, size))
                         {
                             bool isItHorizontalLeft = rand() % 2 == 1;     // Should the ship be horizontalLeft (1) or right (0)
                             
-                            if (isItHorizontalLeft && canBeHorizontalLeft(row, col, gameBoard, size)) {
+                            if(isItHorizontalLeft && canBeHorizontalLeft(row, col, gameBoard, size)) {
+                                // cout << "It's horizontal left" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row][col - i]->taken = true;                   // Game slot is used
                                     gameBoard.gameMatrix[row][col - i]->shipName = this->name;          // Type of ship
                                     string coordinate = gameBoard.gameMatrix[row][col - i]->coordinate; // Coordinate
                                     locations[coordinate] = false;
                                 }
+                                return;
                             }
-                            else {
+                            else if(!isItHorizontalLeft && canBeHorizontalRight(row, col, gameBoard, size)) {
+                                // cout << "It's horizontal right" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row][col + i]->taken = true;
                                     gameBoard.gameMatrix[row][col + i]->shipName = this->name;
                                     string coordinate = gameBoard.gameMatrix[row][col + i]->coordinate;
                                     locations[coordinate] = false;
                                 }
+                                return;
                             }
                         }
-                        else if (!isItHorizontal && canBeVertical(row, col, gameBoard, size))
+                        else if(!isItHorizontal && canBeVertical(row, col, gameBoard, size))
                         {
                             bool isItVerticalAbove = rand() % 2 == 1;     // Should the ship be verticalAbove (1) or below (0)
                             
-                            if (isItVerticalAbove && canBeVerticalAbove(row, col, gameBoard, size)) {
+                            if(isItVerticalAbove && canBeVerticalAbove(row, col, gameBoard, size)) {
+                                // cout << "It's vertical above" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row - i][col]->taken = true;
                                     gameBoard.gameMatrix[row - i][col]->shipName = this->name;
                                     string coordinate = gameBoard.gameMatrix[row - i][col]->coordinate;
                                     locations[coordinate] = false;
                                 }
+                                return;
                             }
-                            else {
+                            else if(!isItVerticalAbove && canBeVerticalBelow(row, col, gameBoard, size)) {
+                                // cout << "It's vertical below" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row + i][col]->taken = true;
                                     gameBoard.gameMatrix[row + i][col]->shipName = this->name;
                                     string coordinate = gameBoard.gameMatrix[row + i][col]->coordinate;
                                     locations[coordinate] = false;
                                 }
+                                return;
                             }
                         }
-                        return true;
                     }
                 }
             }
@@ -158,7 +207,7 @@ public:
         /* Can the ship be placed horizontally to the left of the XY coordinate? */
         bool canBeHorizontalLeft(int row, int col, board b, int size) {
             for (int i = 0; i < size; i++) {
-                if (b.gameMatrix[row][col - i]->yAxis < 0 || b.gameMatrix[row][col - i]->taken)
+                if (col - i < 0 || b.gameMatrix[row][col - i]->taken)
                     return false;
             }
             return true;
@@ -167,7 +216,7 @@ public:
         /* Can the ship be placed horizontally to the right of the XY coordinate? canBeVerticalBelow */
         bool canBeHorizontalRight(int row, int col, board b, int size) {
             for (int i = 0; i < size; i++) {
-                if (b.gameMatrix[row][col + i]->yAxis > 9 || b.gameMatrix[row][col + i]->taken)
+                if (col + i > 9 || b.gameMatrix[row][col + i]->taken)
                     return false;
             }
             return true;
@@ -181,7 +230,7 @@ public:
         /* Can the ship be placed vertically above the XY coordinate? */
         bool canBeVerticalAbove(int row, int col, board b, int size) {
             for (int i = 0; i < size; i++) {
-                if (b.gameMatrix[row - i][col]->xAxis < 0 || b.gameMatrix[row - i][col]->taken)
+                if (row - i < 0 || b.gameMatrix[row - i][col]->taken)
                     return false;
             }
             return true;
@@ -190,7 +239,7 @@ public:
         /* Can the ship be placed vertically below the XY coordinate? */
         bool canBeVerticalBelow(int row, int col, board b, int size) {
             for (int i = 0; i < size; i++) {
-                if (b.gameMatrix[row + i][col]->xAxis > 9 || b.gameMatrix[row + i][col]->taken)
+                if (row + i > 9 || b.gameMatrix[row + i][col]->taken)
                     return false;
             }
             return true;
