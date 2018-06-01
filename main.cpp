@@ -27,7 +27,7 @@ int main() {
     string userGuess;
 
     // Game Loop Start
-    while(userShipsLeft != 0 && computerShipsLeft != 0) {
+    while(computerShipsLeft != 0) {
 
         // User guesses a place
         cout << "Guess (e.g. E4): ";
@@ -35,18 +35,15 @@ int main() {
 
         // Was it a hit or a miss?
         if(gameBoard.markHitOrMiss(userGuess)) {
-
+            computerShipsLeft--;
         }
 
-        gameBoard.printBoard();
+        // gameBoard.printBoard();
 
         // Redraw game board
         // Check to see if game is over
         // If game over - exit loop/end program
         // Toggle next player's turn
-
-        userShipsLeft--;
-        computerShipsLeft--;
     }
 
     // Game Loop Return
