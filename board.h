@@ -2,6 +2,7 @@
 #include <string>
 #include <cstdlib>
 #include <map>
+#include <vector>
 using namespace std;
 
 /* e.g. '4' turns into 'E' */
@@ -16,7 +17,7 @@ string intCoordToString(int num) {
 
 /* Guess can only have first as character A to J and second as integer 1 - 10 */
 bool isItValidGuess(string guess) {
-    if(guess.size() != 2 || guess.size() != 3) // e.g. E4 or E10
+    if(guess.size() < 2 || guess.size() > 3) // e.g. not E4 or E10
         return false;
 
     bool validChoice = true;
@@ -32,12 +33,13 @@ bool isItValidGuess(string guess) {
             break;
         }
     }
+
     // e.g. This would be the '4' in 'E4'
     if(guess.size() == 2) {
         char second = guess[1];
         char numChoices[9] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
         for(int i = 0; i < 10; i++) {
-            if(second != numChoices[i])       // Doesn't match
+            if(second != numChoices[i])        // Doesn't match
                 validChoice = false;
             else if(second == numChoices[i]) { // Matches and is valid
                 validChoice = true;
@@ -77,7 +79,7 @@ public:
         for(int i = 0; i < 10; i++) {
             cout << letter << " | ";
             for(int j = 0; j < 10; j++) {
-                if(gameMatrix[i][j]->hit || gameMatrix[i][j]->shipName == "X")
+                if(gameMatrix[i][j]->taken || gameMatrix[i][j]->shipName == "X")
                     cout << gameMatrix[i][j]->shipName << " ";
                 else
                     cout << "• ";
@@ -99,14 +101,12 @@ public:
         int row = r - 65;
         int col = c - 49;
 
-        cout << "Row is " << row << " and col is " << col << endl;
-
         if(gameMatrix[row][col]->hit) {
             cout << "You already guessed " << gameMatrix[row][col]->coordinate << endl;
             return false;
         }
         else if(gameMatrix[row][col]->taken) {
-            cout << "Hit!" << endl;
+            cout << "Hit!" << endl << endl;
             gameMatrix[row][col]->hit = true;
             string coordinate = gameMatrix[row][col]->coordinate;
             gameMatrix[row][col]->currentShip->locations[coordinate] = true;
@@ -153,9 +153,6 @@ public:
                 if (!gameBoard.gameMatrix[row][col]->taken) {        // If the board slot isn't taken
                     if (canBeHorizontal(row, col, gameBoard, size) || canBeVertical(row, col, gameBoard, size)) {
 
-                        // cout << "Current coordinates are: " << gameBoard.gameMatrix[row][col]->coordinate << endl;
-                        // cout << "This is ship " << name << " of size " << size << endl;
-
                         bool isItHorizontal = rand() % 2 == 1;             // Should the ship be horizontal (1) or vertical (0)
 
                         if(isItHorizontal && canBeHorizontal(row, col, gameBoard, size))
@@ -163,7 +160,6 @@ public:
                             bool isItHorizontalLeft = rand() % 2 == 1;     // Should the ship be horizontalLeft (1) or right (0)
 
                             if(isItHorizontalLeft && canBeHorizontalLeft(row, col, gameBoard, size)) {
-                                // cout << "It's horizontal left" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row][col - i]->taken = true;                   // Game slot is used
                                     gameBoard.gameMatrix[row][col - i]->shipName = name;                // Type of ship
@@ -174,7 +170,6 @@ public:
                                 return;
                             }
                             else if(!isItHorizontalLeft && canBeHorizontalRight(row, col, gameBoard, size)) {
-                                // cout << "It's horizontal right" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row][col + i]->taken = true;
                                     gameBoard.gameMatrix[row][col + i]->shipName = name;
@@ -190,7 +185,6 @@ public:
                             bool isItVerticalAbove = rand() % 2 == 1;     // Should the ship be verticalAbove (1) or below (0)
 
                             if(isItVerticalAbove && canBeVerticalAbove(row, col, gameBoard, size)) {
-                                // cout << "It's vertical above" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row - i][col]->taken = true;
                                     gameBoard.gameMatrix[row - i][col]->shipName = name;
@@ -201,7 +195,6 @@ public:
                                 return;
                             }
                             else if(!isItVerticalAbove && canBeVerticalBelow(row, col, gameBoard, size)) {
-                                // cout << "It's vertical below" << endl << endl;
                                 for (int i = 0; i < size; i++) {
                                     gameBoard.gameMatrix[row + i][col]->taken = true;
                                     gameBoard.gameMatrix[row + i][col]->shipName = name;
