@@ -10,5 +10,5 @@ The game board each player gets has two grids. One of the grids is used by the p
 1. Make it so placeShip() works for both the computer ship placement and the user ship placement.
 2. Make it so that if a computers guess is a hit, it continues to guess around that hit until it sinks the ship.
 3. Change up rand() to something more random (ha ha).
-4. Add in destructor for "boardSlot" struct.
+4. Check if the there are any memory leaks from dynamic location.
 5. Comment the code a lot more for when I inevitably forget what it all means.
