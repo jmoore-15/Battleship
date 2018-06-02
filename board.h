@@ -124,6 +124,10 @@ public:
         }
     }
 
+    /* Determine the spots around a hit where the next guess should be */
+
+    /* Determine the best spot to guess based off the last guess */
+
     /******** Each boat on the board ********/
     struct ship {
         ship() {
