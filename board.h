@@ -24,7 +24,7 @@ bool isItValidGuess(string guess) {
 
     // e.g. This would be the 'E' in 'E4'
     char charChoices[10] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
-    char first = guess[0];
+    char first = toupper(guess[0]);
     for(int i = 0; i < 10; i++) {
         if(first != charChoices[i])        // Doesn't match
             validChoice = false;
@@ -33,6 +33,9 @@ bool isItValidGuess(string guess) {
             break;
         }
     }
+
+    if(!validChoice)
+        return false;
 
     // e.g. This would be the '4' in 'E4'
     if(guess.size() == 2) {
@@ -90,41 +93,148 @@ public:
     }
 
     /* Did the guess hit a ship? */
-    bool markHitOrMiss(string guess) {
+    string checkHitOrMiss(string guess) {
         if(!isItValidGuess(guess)) {
-            cout << "That coordinate does not exist. Please guess a letter from A to J and a number from 1 to 10" << endl;
-            return false;
+            cout << "That coordinate does not exist. Please guess a letter from A to J and a number from 1 to 10" << endl << endl;
+            return "m";
         }
 
-        char r = toupper(guess[0]);
-        char c = guess[1];
+        char r = toupper(guess[0]);   // e.g. A in A5 is 0
         int row = r - 65;
-        int col = c - 49;
+        char c;
+        int col;
+
+        if(guess.size() == 2) {       // e.g. 5 in A5 is 4
+            c = guess[1];
+            col = c - 49;
+        }
+        else if(guess.size() == 3)    // e.g. 10 is A10 is 9
+            col = 9;
 
         if(gameMatrix[row][col]->hit) {
-            cout << "You already guessed " << gameMatrix[row][col]->coordinate << endl;
-            return false;
+            cout << "You already guessed " << gameMatrix[row][col]->coordinate << endl << endl;
+            return "m";
         }
         else if(gameMatrix[row][col]->taken) {
-            cout << "Hit!" << endl << endl;
+            cout << "Hit!" << endl;
             gameMatrix[row][col]->hit = true;
             string coordinate = gameMatrix[row][col]->coordinate;
             gameMatrix[row][col]->currentShip->locations[coordinate] = true;
 
             if(gameMatrix[row][col]->currentShip->isItSunk()) {
                 cout << "You sunk the ship!" << endl << endl;
-                return true;
+                return "s";
             }
-            return false;
+            cout << endl;
+            return "h";
         }
         else {
             gameMatrix[row][col]->shipName = "X";
             cout << "Miss" << endl << endl;
-            return false;
+            return "m";
         }
     }
 
     /* Determine the spots around a hit where the next guess should be */
+    string makeGuessIfPreviousHit(string lastHitOnUser, vector<string> *potentialGuesses) {
+        char r = toupper(lastHitOnUser[0]); // e.g. A in A5 is 0
+        int row = r - 65;
+        char c;
+        int col;
+
+        if(lastHitOnUser.size() == 2) {     // e.g. 5 in A5 is 4
+            c = lastHitOnUser[1];
+            col = c - 49;
+        }
+        else if(lastHitOnUser.size() == 3)  // e.g. 10 in A10 is 9
+            col = 9;
+
+        // Go through and check potential places to guess
+        if(!gameMatrix[row - 1][col]->hit && row - 1 >= 0 && row - 1 <= 9) {
+            if(gameMatrix[row - 1][col]->taken) {
+                cout << "Hit!" << endl << endl;
+
+                gameMatrix[row - 1][col]->hit = true;
+                string coordinate = gameMatrix[row - 1][col]->coordinate;
+                gameMatrix[row - 1][col]->currentShip->locations[coordinate] = true;
+
+                if(gameMatrix[row - 1][col]->currentShip->isItSunk()) {
+                    cout << "You sunk the ship!" << endl << endl;
+                    return "s";
+                }
+                return coordinate;
+            }
+            else {
+                gameMatrix[row - 1][col]->shipName = "X";
+                cout << "Miss" << endl << endl;
+                return "m";
+            }
+        }
+        else if(!gameMatrix[row + 1][col]->hit && row + 1 >= 0 && row + 1 <= 9) {
+            if(gameMatrix[row + 1][col]->taken) {
+                cout << "Hit!" << endl;
+
+                gameMatrix[row + 1][col]->hit = true;
+                string coordinate = gameMatrix[row + 1][col]->coordinate;
+                gameMatrix[row + 1][col]->currentShip->locations[coordinate] = true;
+
+                if(gameMatrix[row + 1][col]->currentShip->isItSunk()) {
+                    cout << "You sunk the ship!" << endl << endl;
+                    return "s";
+                }
+                cout << endl;
+                return coordinate;
+            }
+            else {
+                gameMatrix[row + 1][col]->shipName = "X";
+                cout << "Miss" << endl << endl;
+                return "m";
+            }
+        }
+        else if(!gameMatrix[row][col - 1]->hit && col - 1 >= 0 && col - 1 <= 9) {
+            if(gameMatrix[row][col - 1]->taken) {
+                cout << "Hit!" << endl;
+
+                gameMatrix[row][col - 1]->hit = true;
+                string coordinate = gameMatrix[row][col - 1]->coordinate;
+                gameMatrix[row][col - 1]->currentShip->locations[coordinate] = true;
+
+                if(gameMatrix[row][col - 1]->currentShip->isItSunk()) {
+                    cout << "You sunk the ship!" << endl << endl;
+                    return "s";
+                }
+                cout << endl;
+                return coordinate;
+            }
+            else {
+                gameMatrix[row][col - 1]->shipName = "X";
+                cout << "Miss" << endl << endl;
+                return "m";
+            }
+        }
+        else if(!gameMatrix[row][col + 1]->hit && col + 1 >= 0 && col + 1 <= 9) {
+            if(gameMatrix[row][col + 1]->taken) {
+                cout << "Hit!" << endl;
+
+                gameMatrix[row][col + 1]->hit = true;
+                string coordinate = gameMatrix[row][col + 1]->coordinate;
+                gameMatrix[row][col + 1]->currentShip->locations[coordinate] = true;
+
+                if(gameMatrix[row][col + 1]->currentShip->isItSunk()) {
+                    cout << "You sunk the ship!" << endl << endl;
+                    return "s";
+                }
+                cout << endl;
+                return coordinate;
+            }
+            else {
+                gameMatrix[row][col + 1]->shipName = "X";
+                cout << "Miss" << endl << endl;
+                return "m";
+            }
+        }
+        return "m";
+    }
 
     /* Determine the best spot to guess based off the last guess */
 
