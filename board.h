@@ -75,14 +75,34 @@ public:
     }
 
     /* Current state of the board */
-    void printBoard() {
+    void printCompleteBoard() {
         cout << "  | 1 2 3 4 5 6 7 8 9 10 " << endl;
         cout << "------------------------" << endl;
         char letter = 'A';
         for(int i = 0; i < 10; i++) {
             cout << letter << " | ";
             for(int j = 0; j < 10; j++) {
-                if(gameMatrix[i][j]->taken || gameMatrix[i][j]->shipName == "X")
+                if(gameMatrix[i][j]->hit)
+                    cout << "H ";
+                else if(gameMatrix[i][j]->taken)
+                    cout << gameMatrix[i][j]->shipName << " ";
+                else
+                    cout << "• ";
+            }
+            cout << endl;
+            letter++;
+        }
+    }
+
+    /* Current state of the board */
+    void printEnemyBoard() {
+        cout << "  | 1 2 3 4 5 6 7 8 9 10 " << endl;
+        cout << "------------------------" << endl;
+        char letter = 'A';
+        for(int i = 0; i < 10; i++) {
+            cout << letter << " | ";
+            for(int j = 0; j < 10; j++) {
+                if(gameMatrix[i][j]->hit || gameMatrix[i][j]->shipName == "X")
                     cout << gameMatrix[i][j]->shipName << " ";
                 else
                     cout << "• ";
@@ -148,6 +168,7 @@ public:
         }
         else if(lastHitOnUser.size() == 3)  // e.g. 10 in A10 is 9
             col = 9;
+        cout << "Last row is " << row << " and col is " << col << endl;
 
         // Go through and check potential places to guess
         if(!gameMatrix[row - 1][col]->hit && row - 1 >= 0 && row - 1 <= 9) {
@@ -416,6 +437,23 @@ public:
         string shipName;   // Destroyer
         ship* currentShip; // Current ship at a boardSlot
     };
+
+    /* Place the users ships */
+    void placeUserShips(string shipCoords[], string name, ship* boat) {
+        for(int b = 0; b < sizeof(shipCoords); b++) {
+            string boatCoordinate = shipCoords[b];
+
+            for(int row = 0; row < 10; row++) {
+                for(int col = 0; col < 10; col++) {
+                    if(gameMatrix[row][col]->coordinate == boatCoordinate) {
+                        gameMatrix[row][col]->taken = true;
+                        gameMatrix[row][col]->shipName = name;
+                        boat->locations[boatCoordinate] = false;
+                    }
+                }
+            }
+        }
+    }
 
     boardSlot* gameMatrix[10][10]; // gameMatrix[row][column]
 };

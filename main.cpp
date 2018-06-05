@@ -49,18 +49,52 @@ int main() {
     board::ship* uDestroyer = new board::ship("d", 3);
     board::ship* uPatrol = new board::ship("p", 2);
 
-    // Place users ships (Until I figure out how best to place user inputted ships, have it be random)
-    uAircraft->placeShip(uGameBoard);
-    uBattleship->placeShip(uGameBoard);
-    uSubmarine->placeShip(uGameBoard);
-    uDestroyer->placeShip(uGameBoard);
-    uPatrol->placeShip(uGameBoard);
-
-    cout << endl << "Users Board" << endl;
-    uGameBoard.printBoard();
-    cout << endl << "Computers board" << endl;
-    cGameBoard.printBoard();
+    // Place the aircraft
+    uGameBoard.printCompleteBoard();
+    string A1, A2, A3, A4, A5;
+    cout << "Please enter a valid 5 spaces for the aircraft. Example is A1 A2 A3 A4 A5:  ";
+    cin >> A1 >> A2 >> A3 >> A4 >> A5;
     cout << endl;
+    string air[5] = { A1, A2, A3, A4, A5 };
+    uGameBoard.placeUserShips(air, "a", uAircraft);
+
+    // Place the battleship
+    uGameBoard.printCompleteBoard();
+    string B1, B2, B3, B4;
+    cout << "Please enter a valid 4 spaces for the battleship. Example is A1 A2 A3 A4:  ";
+    cin >> B1 >> B2 >> B3 >> B4;
+    cout << endl;
+    string battle[4] = { B1, B2, B3, B4 };
+    uGameBoard.placeUserShips(battle, "b", uBattleship);
+
+    // Place the submarine
+    uGameBoard.printCompleteBoard();
+    string S1, S2, S3;
+    cout << "Please enter a valid 3 spaces for the submarine. Example is A1 A2 A3:  ";
+    cin >> S1 >> S2 >> S3;
+    cout << endl;
+    string sub[3] = { S1, S2, S3 };
+    uGameBoard.placeUserShips(sub, "s", uSubmarine);
+
+    // Place the destroyer
+    uGameBoard.printCompleteBoard();
+    string D1, D2, D3;
+    cout << "Please enter a valid 3 spaces for the destroyer. Example is A1 A2 A3:  ";
+    cin >> D1 >> D2 >> D3;
+    cout << endl;
+    string destroy[3] = { D1, D2, D3 };
+    uGameBoard.placeUserShips(destroy, "d", uDestroyer);
+
+    // Place the patrol
+    uGameBoard.printCompleteBoard();
+    string P1, P2;
+    cout << "Please enter a valid 2 spaces for the patrol. Example is A1 A2:  ";
+    cin >> P1 >> P2;
+    cout << endl;
+    string pat[2] = { P1, P2 };
+    uGameBoard.placeUserShips(pat, "p", uPatrol);
+
+    uGameBoard.printCompleteBoard();
 
     // Game Loop Start
     string userGuess;
@@ -83,8 +117,8 @@ int main() {
                 lastHitOnUser = "none";          // We sunk a ship, so set the lastHitOnUser to none so we don't check
                 userShipsLeft--;
             }
-            else if(wasCompShipSunk != "m")      // We hit a ship, so set the lastHitOnUser to the current coordinate
-                lastHitOnUser = wasCompShipSunk; // Returns the guessed coordinate
+            else if(wasUserShipSunk != "m")      // We hit a ship, so set the lastHitOnUser to the current coordinate
+                lastHitOnUser = wasUserShipSunk; // Returns the guessed coordinate
         }
         /**** If the computers last guess was not a hit ****/
         else {
@@ -100,9 +134,15 @@ int main() {
                 lastHitOnUser = "none";      // We sunk a ship, so set the lastHitOnUser to none so we don't check
                 userShipsLeft--;
             }
-            else if(wasCompShipSunk == "h")  // We hit a ship, so set the lastHitOnUser to the current coordinate
+            else if(wasUserShipSunk == "h")  // We hit a ship, so set the lastHitOnUser to the current coordinate
                 lastHitOnUser = computerGuess;
         }
+
+        cout << endl << "Users Board" << endl;
+        uGameBoard.printCompleteBoard();
+        cout << endl << "Computers board" << endl;
+        cGameBoard.printEnemyBoard();
+        cout << endl;
     }
 
     if(userShipsLeft == 0) {
