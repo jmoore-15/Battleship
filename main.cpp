@@ -49,6 +49,13 @@ int main() {
     board::ship* uDestroyer = new board::ship("d", 3);
     board::ship* uPatrol = new board::ship("p", 2);
 
+    uAircraft->placeShip(uGameBoard);
+    uBattleship->placeShip(uGameBoard);
+    uSubmarine->placeShip(uGameBoard);
+    uDestroyer->placeShip(uGameBoard);
+    uPatrol->placeShip(uGameBoard);
+
+    /*
     // Place the aircraft
     uGameBoard.printCompleteBoard();
     string A1, A2, A3, A4, A5;
@@ -93,6 +100,7 @@ int main() {
     cout << endl;
     string pat[2] = { P1, P2 };
     uGameBoard.placeUserShips(pat, "p", uPatrol);
+    */
 
     uGameBoard.printCompleteBoard();
 
