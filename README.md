@@ -7,7 +7,7 @@ The game board each player gets has two grids. One of the grids is used by the p
 
 
 ### To Do
-1. Make it so placeShip() works for both the computer ship placement and the user ship placement.
+1. Get the GUI up and running
 2. Make it so that if a computers guess is a hit, it continues to guess around that hit until it sinks the ship.
 3. Change up rand() to something more random (ha ha).
 4. Check if the there are any memory leaks from dynamic location.
